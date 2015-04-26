@@ -106,13 +106,13 @@ class OthelloBoard
   # starting point.
   def enumerate_around(start_x, start_y, func)
     movements = {
-      DIRECTION_NORTH: [0, -1],
-      DIRECTION_NORTHEAST: [1, -1],
-      DIRECTION_EAST: [1, 0],
-      DIRECTION_SOUTHEAST: [1, 1],
-      DIRECTION_SOUTH: [0, 1],
-      DIRECTION_SOUTHWEST: [-1, 1],
-      DIRECTION_WEST: [-1, 0],
+      DIRECTION_NORTH:     [ 0, -1],
+      DIRECTION_NORTHEAST: [ 1, -1],
+      DIRECTION_EAST:      [ 1,  0],
+      DIRECTION_SOUTHEAST: [ 1,  1],
+      DIRECTION_SOUTH:     [ 0,  1],
+      DIRECTION_SOUTHWEST: [-1,  1],
+      DIRECTION_WEST:      [-1,  0],
       DIRECTION_NORTHWEST: [-1, -1]
     }
 
