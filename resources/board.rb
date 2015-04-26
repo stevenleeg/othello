@@ -1,4 +1,5 @@
 class OthelloBoard
+  attr_accessor :debug_mode
   ##
   # Constants
   #
@@ -45,6 +46,10 @@ class OthelloBoard
   #
   def mark(x, y, val)
     @board[y][x] = val
+    
+    if debug_mode
+      puts "[INFO] Marked #{x}, #{y} as #{OthelloBoard.spot_to_s(val)}"
+    end
   end
 
   def get(x, y)
@@ -57,12 +62,11 @@ class OthelloBoard
   #
   # This basically does what you (as a human) would do while placing a piece on
   # the board. Use this instead of mark if you're making moves.
-  def place(x, y, player)
-    mark(x, y, player)
+  def place(place_x, place_y, player)
+    mark(place_x, place_y, player)
 
     opponent = (player == SPOT_BLACK) ? SPOT_WHITE : SPOT_BLACK
     flipper = Proc.new do |points, direction|
-      #byebug
       streak = []
       points.each_with_index do |point, i|
         x, y = point
@@ -89,7 +93,13 @@ class OthelloBoard
       end
     end
 
-    enumerate_around(x, y, flipper)
+    if debug_mode
+      puts "[INFO] Placing #{OthelloBoard.spot_to_s(player)} on (#{place_x}, #{place_y})"
+      enumerate_around(place_x, place_y, flipper)
+      puts self.to_s
+    else
+      enumerate_around(place_x, place_y, flipper)
+    end
   end
 
   # Takes in a proc and iterates through spots in each direction from the
@@ -190,6 +200,20 @@ class OthelloBoard
     end
 
     str
+  end
+
+  ##
+  # Class methods
+  #
+  def self.spot_to_s(val)
+      case val
+      when SPOT_WHITE
+        return 'SPOT_WHITE'
+      when SPOT_BLACK
+        return 'SPOT_BLACK'
+      when SPOT_OPEN
+        return 'SPOT_OPEN'
+      end
   end
 end
 
