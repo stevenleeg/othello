@@ -2,10 +2,7 @@ require './resources/board'
 require './resources/ai_player'
 require 'byebug'
 
-board = OthelloBoard.new
-board.debug_mode = true
-player = nil
-opponent_color = nil
+player, board, opponent_color = nil
 
 ARGF.each_with_index do |line, line_number|
   # Take in the game initialization string
@@ -18,6 +15,8 @@ ARGF.each_with_index do |line, line_number|
     opponent_color = \
       player_color == 'W' ? OthelloBoard::SPOT_BLACK : OthelloBoard::SPOT_WHITE
 
+    board = OthelloBoard.new
+    board.debug_mode = true
     player = AIPlayer.new(board, player_color)
 
     if player_color == OthelloBoard::SPOT_BLACK
