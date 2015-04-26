@@ -105,73 +105,26 @@ class OthelloBoard
   # Takes in a proc and iterates through spots in each direction from the
   # starting point.
   def enumerate_around(start_x, start_y, func)
-    # Scan north
-    x, y, points = start_x, start_y - 1, []
-    until y < 0
-      points << [x, y]
-      y -= 1
-    end
-    func.call(points, DIRECTION_NORTH)
+    movements = {
+      DIRECTION_NORTH: [0, -1],
+      DIRECTION_NORTHEAST: [1, -1],
+      DIRECTION_EAST: [1, 0],
+      DIRECTION_SOUTHEAST: [1, 1],
+      DIRECTION_SOUTH: [0, 1],
+      DIRECTION_SOUTHWEST: [-1, 1],
+      DIRECTION_WEST: [-1, 0],
+      DIRECTION_NORTHWEST: [-1, -1]
+    }
 
-    # Scan northeast
-    x, y, points = start_x + 1, start_y - 1, []
-    until x > 7 or y < 0
-      points << [x, y]
-      x += 1
-      y -= 1
+    movements.each do |direction, movements|
+      x, y, points = start_x + movements[0], start_y + movements[1], []
+      until (x < 0 or x > 7) or (y < 0 or y > 7)
+        points << [x, y]
+        x += movements[0]
+        y += movements[1]
+      end
+      func.call(points, direction)
     end
-    func.call(points, DIRECTION_NORTHEAST)
-
-    # Scan east
-    x, y, points = start_x + 1, start_y, []
-    until x > 7
-      points << [x, y]
-      x += 1
-    end
-    func.call(points, DIRECTION_EAST)
-
-    # Scan southeast
-    x, y, points = start_x + 1, start_y + 1, []
-    until x > 7 or y > 7
-      points << [x, y]
-      x += 1
-      y += 1
-    end
-    func.call(points, DIRECTION_SOUTHEAST)
-
-    # Scan south
-    x, y, points = start_x, start_y + 1, []
-    until y > 7
-      points << [x, y]
-      y += 1
-    end
-    func.call(points, DIRECTION_SOUTH)
-    
-    # Scan southwest
-    x, y, points = start_x - 1, start_y + 1, []
-    until x < 0 or y > 7
-      points << [x, y]
-      x -= 1
-      y += 1
-    end
-    func.call(points, DIRECTION_SOUTHWEST)
-    
-    # Scan west
-    x, y, points = start_x - 1, start_y, []
-    until x < 0
-      points << [x, y]
-      x -= 1
-    end
-    func.call(points, DIRECTION_WEST)
-    
-    # Scan northwest
-    x, y, points = start_x - 1, start_y - 1, []
-    until x < 0 or y < 0
-      points << [x, y]
-      x -= 1
-      y -= 1
-    end
-    func.call(points, DIRECTION_NORTHWEST)
   end
 
   ##

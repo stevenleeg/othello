@@ -8,8 +8,6 @@ player = nil
 opponent_color = nil
 
 ARGF.each_with_index do |line, line_number|
-  puts board.to_s
-
   # Take in the game initialization string
   if line_number == 0
     _, player_color, depth_limit, timelimit1, timelimit2 = line.split(' ')
@@ -25,6 +23,8 @@ ARGF.each_with_index do |line, line_number|
     if player_color == OthelloBoard::SPOT_BLACK
       # TODO: If the player is black then make the first move
     end
+
+    puts board.to_s
     next
   end
   
