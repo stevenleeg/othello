@@ -48,13 +48,23 @@ class OthelloBoard
   ##
   # Getter/setters
   #
+  def mark_points(points, player)
+    points.each do |point|
+      x, y = point
+
+      mark(x, y, player)
+    end
+  end
+  
   def mark(x, y, val)
     @board[y][x] = val
 
     if val == SPOT_BLACK
       @black_points << [x, y]
+      @white_points.delete [x, y]
     elsif val == SPOT_WHITE
       @white_points << [x, y]
+      @black_points.delete [x, y]
     end
 
     if debug_mode
@@ -105,12 +115,6 @@ class OthelloBoard
       if streak.length > 0
         streak.map do |point|
           mark(point[0], point[1], player)
-
-          if player == SPOT_WHITE
-            white_points.delete point
-          else
-            black_points.delete point
-          end
         end
       end
     end
