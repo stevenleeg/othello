@@ -106,7 +106,7 @@ class OthelloBoard
         streak.map do |point|
           mark(point[0], point[1], player)
 
-          if player == SPOT_WHITE
+          if player == SPOT_BLACK
             white_points.delete point
           else
             black_points.delete point
@@ -211,7 +211,9 @@ class OthelloBoard
     end
 
     str += "White: #{@white_points.length}\n"
-    str += "Black: #{@black_points.length}" 
+    str += "Black: #{@black_points.length}\n" 
+    str += "White Points: #{@white_points}\n"
+    str += "Black Points: #{@black_points}\n"
 
     str
   end
