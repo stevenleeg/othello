@@ -25,6 +25,8 @@ class AIPlayer
       x, y = point
 
       enumerator = Proc.new do |points, direction|
+        return if points.length == 0
+
         x, y = points.first
         if @board.get(x, y) != OthelloBoard::SPOT_OPEN
           next

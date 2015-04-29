@@ -103,7 +103,6 @@ class OthelloBoard
 
       # Flip over all of the spots in the streak
       if streak.length > 0
-        streak.map { |point| mark(point[0], point[1], player) }
         streak.map do |point|
           mark(point[0], point[1], player)
 
