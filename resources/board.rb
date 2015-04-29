@@ -215,7 +215,9 @@ class OthelloBoard
     end
 
     str += "White: #{@white_points.length}\n"
-    str += "Black: #{@black_points.length}" 
+    str += "Black: #{@black_points.length}\n" 
+    str += "White Points: #{@white_points}\n"
+    str += "Black Points: #{@black_points}\n"
 
     str
   end
