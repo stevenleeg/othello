@@ -1,6 +1,6 @@
 class OthelloBoard
   attr_accessor :debug_mode
-  attr_reader :white_count, :black_count
+  attr_reader :white_points, :black_points
   ##
   # Constants
   #
@@ -35,14 +35,14 @@ class OthelloBoard
       @board << col
     end
 
-    @black_count, @white_count = 0, 0
+    @white_points = []
+    @black_points = []
 
     # Add the starting pieces
     mark(3, 3, SPOT_WHITE)
     mark(4, 3, SPOT_BLACK)
     mark(4, 4, SPOT_WHITE)
     mark(3, 4, SPOT_BLACK)
-
   end
 
   ##
@@ -52,9 +52,9 @@ class OthelloBoard
     @board[y][x] = val
 
     if val == SPOT_BLACK
-      @black_count += 1
+      @black_points << [x, y]
     elsif val == SPOT_WHITE
-      @white_count += 1
+      @white_points << [x, y]
     end
 
     if debug_mode
@@ -75,8 +75,11 @@ class OthelloBoard
   # the board. Use this instead of mark if you're making moves.
   def place(place_x, place_y, player)
     mark(place_x, place_y, player)
+    opponent = OthelloBoard::opponent_of(player)
 
-    opponent = (player == SPOT_BLACK) ? SPOT_WHITE : SPOT_BLACK
+    # TODO: This might be costly. Remove?
+    return false if valid_move?(place_x, place_y, player)
+
     flipper = Proc.new do |points, direction|
       streak = []
       points.each_with_index do |point, i|
@@ -101,21 +104,66 @@ class OthelloBoard
       # Flip over all of the spots in the streak
       if streak.length > 0
         streak.map { |point| mark(point[0], point[1], player) }
+        streak.map do |point|
+          mark(point[0], point[1], player)
+
+          if player == SPOT_WHITE
+            white_points.delete point
+          else
+            black_points.delete point
+          end
+        end
       end
     end
 
     if debug_mode
       puts "[INFO] Placing #{OthelloBoard.spot_to_s(player)} on (#{place_x}, #{place_y})"
       enumerate_around(place_x, place_y, flipper)
-      puts self.to_s
     else
       enumerate_around(place_x, place_y, flipper)
     end
   end
 
+  # Given a point and a player return an integer (the number of flips that
+  # would result from the move) if the move is valid or false if the move
+  # is invalid.
+  def valid_move?(start_x, start_y, player)
+    return false if get(start_x, start_y) != SPOT_OPEN
+
+    # Counts the total flips that would result from this move
+    flips = 0
+
+    opponent = OthelloBoard::opponent_of(player)
+    enumerator = Proc.new do |points, direction|
+      # Counts the total flips that would result from this direction
+      temp_flips = 0
+      points.each do |point|
+        x, y = point
+
+        case get(x, y)
+        when opponent
+          temp_flips += 1
+        when SPOT_OPEN
+          temp_flips = 0
+          break
+        when player
+          flips += temp_flips
+          break
+        end
+      end
+    end
+    enumerate_around(start_x, start_y, enumerator)
+
+    if flips == 0
+      return false
+    else
+      return flips
+    end
+  end
+
   # Takes in a proc and iterates through spots in each direction from the
   # starting point.
-  def enumerate_around(start_x, start_y, func)
+  def enumerate_around(start_x, start_y, func, i = 0)
     movements = {
       DIRECTION_NORTH:     [ 0, -1],
       DIRECTION_NORTHEAST: [ 1, -1],
@@ -129,7 +177,7 @@ class OthelloBoard
 
     movements.each do |direction, movements|
       x, y, points = start_x + movements[0], start_y + movements[1], []
-      until (x < 0 or x > 7) or (y < 0 or y > 7)
+      until (x < 0 or x > 7) or (y < 0 or y > 7) or (i != 0 && points.length == i)
         points << [x, y]
         x += movements[0]
         y += movements[1]
@@ -163,8 +211,8 @@ class OthelloBoard
       str += "\n"
     end
 
-    str += "Whites: #{@white_count}"
-    str += "\nBlacks: #{@black_count}" 
+    str += "White: #{@white_points.length}\n"
+    str += "Black: #{@black_points.length}" 
 
     str
   end
@@ -181,6 +229,10 @@ class OthelloBoard
       when SPOT_OPEN
         return 'SPOT_OPEN'
       end
+  end
+
+  def self.opponent_of(player)
+    (player == SPOT_BLACK) ? SPOT_WHITE : SPOT_BLACK
   end
 end
 
