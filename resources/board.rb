@@ -1,5 +1,6 @@
 class OthelloBoard
   attr_accessor :debug_mode
+  attr_reader :white_count, :black_count
   ##
   # Constants
   #
@@ -34,11 +35,14 @@ class OthelloBoard
       @board << col
     end
 
+    @black_count, @white_count = 0, 0
+
     # Add the starting pieces
     mark(3, 3, SPOT_WHITE)
     mark(4, 3, SPOT_BLACK)
     mark(4, 4, SPOT_WHITE)
     mark(3, 4, SPOT_BLACK)
+
   end
 
   ##
@@ -46,7 +50,13 @@ class OthelloBoard
   #
   def mark(x, y, val)
     @board[y][x] = val
-    
+
+    if val == SPOT_BLACK
+      @black_count += 1
+    elsif val == SPOT_WHITE
+      @white_count += 1
+    end
+
     if debug_mode
       puts "[INFO] Marked #{x}, #{y} as #{OthelloBoard.spot_to_s(val)}"
     end
@@ -55,6 +65,7 @@ class OthelloBoard
   def get(x, y)
     @board[y][x]
   end
+
   
   # Places a piece of the color given by the player argument (should be of type
   # SPOT_BLACK or SPOT_WHITE) onto the board and scans around the point, 
@@ -151,6 +162,9 @@ class OthelloBoard
 
       str += "\n"
     end
+
+    str += "Whites: #{@white_count}"
+    str += "\nBlacks: #{@black_count}" 
 
     str
   end
