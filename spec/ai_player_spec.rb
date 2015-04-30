@@ -26,7 +26,7 @@ describe AIPlayer do
 
     @board.mark_points(white_points, OthelloBoard::SPOT_WHITE)
     @board.mark_points(black_points, OthelloBoard::SPOT_BLACK)
-    
+
     x, y = @player.generate_move
   end
 end
