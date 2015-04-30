@@ -9,7 +9,7 @@ class AIPlayer
   def generate_move
     moves = legal_moves.sort { |x, y| x[:score] <=> y[:score] }
 
-    return moves.first[:point]
+    return moves.last[:point]
   end
 
   private
