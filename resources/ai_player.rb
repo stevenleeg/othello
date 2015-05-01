@@ -14,6 +14,8 @@ class AIPlayer
     @color = color
   end
 
+  # Temporary shit to test board cloning.  Will delete soon
+
   def print_clone
   	#clone = @board.clone
   	clone = Marshal.load(Marshal.dump(@board)) 
