@@ -1,6 +1,6 @@
 class OthelloBoard
   attr_accessor :debug_mode
-  attr_reader :white_points, :black_points
+  attr_reader :white_points, :black_points, :board
   ##
   # Constants
   #
@@ -25,7 +25,7 @@ class OthelloBoard
   DIRECTIONS = [0, 1, 2, 3, 4, 5, 6, 7]
 
   # Initialize the board's starting configuration
-  def initialize
+  def initialize()
     @board = []
     8.times do
       col = []
@@ -240,4 +240,3 @@ class OthelloBoard
     (player == SPOT_BLACK) ? SPOT_WHITE : SPOT_BLACK
   end
 end
-
