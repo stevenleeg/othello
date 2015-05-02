@@ -39,7 +39,7 @@ ARGF.each_with_index do |line, line_number|
     puts board.to_s
 
     # Run our move
-    x, y = player.generate_move
+    x, y = player.get_move
     board.place(x, y, player.color)
     puts board.to_s
   end
