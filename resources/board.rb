@@ -1,6 +1,5 @@
 class OthelloBoard
-  attr_accessor :debug_mode
-  attr_reader :white_points, :black_points, :board
+  attr_accessor :debug_mode, :board, :white_points, :black_points
   ##
   # Constants
   #
@@ -25,7 +24,11 @@ class OthelloBoard
   DIRECTIONS = [0, 1, 2, 3, 4, 5, 6, 7]
 
   # Initialize the board's starting configuration
-  def initialize()
+  def initialize(empty = false)
+    @white_points = []
+    @black_points = []
+    return if empty
+
     @board = []
     8.times do
       col = []
@@ -34,9 +37,6 @@ class OthelloBoard
       end
       @board << col
     end
-
-    @white_points = []
-    @black_points = []
 
     # Add the starting pieces
     mark(3, 3, SPOT_WHITE)
@@ -220,6 +220,16 @@ class OthelloBoard
     str += "Black Points: #{@black_points}\n"
 
     str
+  end
+
+  def clone
+    matrix = Marshal.load(Marshal.dump(@board))
+    b = OthelloBoard.new(true)
+    b.board = matrix
+    b.white_points = @white_points
+    b.black_points = @black_points
+
+    return b
   end
 
   ##
