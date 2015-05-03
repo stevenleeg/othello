@@ -92,7 +92,7 @@ class OthelloBoard
 
     flipper = Proc.new do |points, direction|
       streak = []
-      reached_open = false
+      reached_player = false
       points.each_with_index do |point, i|
         x, y = point
 
@@ -106,15 +106,15 @@ class OthelloBoard
           streak << point
         when SPOT_OPEN
           streak = []
-          reached_open = true
           break
         when player
+          reached_player = true
           break
         end
       end
 
       # Flip over all of the spots in the streak
-      if streak.length > 0 and reached_open
+      if streak.length > 0 and reached_player
         streak.map do |point|
           mark(point[0], point[1], player)
         end
