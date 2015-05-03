@@ -12,8 +12,7 @@ ARGF.each_with_index do |line, line_number|
     # Convert the player color to a constant value
     player_color = \
       player_color == 'B' ? OthelloBoard::SPOT_BLACK : OthelloBoard::SPOT_WHITE
-    opponent_color = \
-      player_color == 'W' ? OthelloBoard::SPOT_BLACK : OthelloBoard::SPOT_WHITE
+    opponent_color = OthelloBoard::opponent_of(player_color)
 
     board = OthelloBoard.new
     board.debug_mode = true
@@ -39,7 +38,7 @@ ARGF.each_with_index do |line, line_number|
     puts board.to_s
 
     # Run our move
-    x, y = player.get_move
+    x, y = player.generate_move
     board.place(x, y, player.color)
     puts board.to_s
   end

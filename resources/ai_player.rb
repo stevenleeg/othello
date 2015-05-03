@@ -30,7 +30,7 @@ class AIPlayer
   # AI moves, runs the minimax algorithm on each tree and
   # chooses 
   def get_move
-    moves = legal_moves(0, @board)
+    moves = legal_moves(@color, @board)
 
     max_player = true
     best_move = 0
@@ -98,7 +98,7 @@ class AIPlayer
 
       # ERROR: Legal Moves is not generating moves for the player
       # Generates possible moves for the human player
-      opponent_moves = legal_moves(1, current_board[:state])
+      opponent_moves = legal_moves(OthelloBoard::opponent_of(@color), current_board[:state])
       puts "maximizing_player, legal_moves: #{opponent_moves}"
 
       if opponent_moves.empty?
@@ -109,7 +109,7 @@ class AIPlayer
         for i in 0..opponent_moves.length-1
           clone = Marshal.load(Marshal.dump(current_board[:state]))
           x_point, y_point = opponent_moves.at(i)[:point].first, opponent_moves.at(i)[:point].last
-          if @color = OthelloBoard::SPOT_BLACK
+          if @color == OthelloBoard::SPOT_BLACK
             clone.place(x_point, y_point, OthelloBoard::SPOT_WHITE)
           else
             clone.place(x_point, y_point, OthelloBoard::SPOT_BLACK)
@@ -128,7 +128,7 @@ class AIPlayer
       # Generates possible moves for the AI player
       puts "minimizing_player, current_board:"
       puts "#{current_board[:state].to_s}"
-      opponent_moves = legal_moves(0, current_board[:state])
+      opponent_moves = legal_moves(@color, current_board[:state])
 
       if opponent_moves.nil?
         return current_board[:score]
@@ -150,7 +150,7 @@ class AIPlayer
   end
 
   def generate_move
-    moves = legal_moves(0, @board).sort { |x, y| x[:score] <=> y[:score] }
+    moves = legal_moves(@color, @board).sort { |x, y| x[:score] <=> y[:score] }
     return moves.last[:point]
   end
 
@@ -162,7 +162,7 @@ class AIPlayer
   #   1 - Human Player
 
   def legal_moves(player, board)
-    opp = OthelloBoard.opponent_of(@color)
+    opp = OthelloBoard.opponent_of(player)
     if opp == OthelloBoard::SPOT_BLACK
       opponent_points = board.black_points
     else
