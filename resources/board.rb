@@ -92,6 +92,7 @@ class OthelloBoard
 
     flipper = Proc.new do |points, direction|
       streak = []
+      reached_open = false
       points.each_with_index do |point, i|
         x, y = point
 
@@ -100,7 +101,6 @@ class OthelloBoard
         # later in the scan). If we ever run into an open spot we just stop, as
         # there's no flipping we'd need to do.
         spot = get(x, y)
-        reached_open = false
         case spot
         when opponent
           streak << point
