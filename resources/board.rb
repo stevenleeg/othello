@@ -100,11 +100,13 @@ class OthelloBoard
         # later in the scan). If we ever run into an open spot we just stop, as
         # there's no flipping we'd need to do.
         spot = get(x, y)
+        reached_open = false
         case spot
         when opponent
           streak << point
         when SPOT_OPEN
           streak = []
+          reached_open = true
           break
         when player
           break
@@ -112,7 +114,7 @@ class OthelloBoard
       end
 
       # Flip over all of the spots in the streak
-      if streak.length > 0
+      if streak.length > 0 and reached_open
         streak.map do |point|
           mark(point[0], point[1], player)
         end
