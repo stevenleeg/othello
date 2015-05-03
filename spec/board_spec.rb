@@ -34,5 +34,15 @@ describe OthelloBoard do
       expect(cloned.get(3, 3)).to equal(OthelloBoard::SPOT_BLACK)
     end
   end
+
+  it 'Deals with walls correctly' do
+    @board.mark_points([[5, 2], [3, 7], [3, 2], [7, 6], [5, 4], [5, 7], [5, 6], [4, 7]], OthelloBoard::SPOT_WHITE)
+    @board.mark_points([[2, 3], [4, 4], [2, 4], [3, 4], [3, 3], [7, 4], [6, 5], [3, 6], [7, 3], [6, 3], [5, 3], [4, 3], [0, 5], [1, 5], [2, 5], [3, 5], [4, 5], [5, 5]], OthelloBoard::SPOT_BLACK)
+
+    puts @board
+    @board.place(1, 4, OthelloBoard::SPOT_WHITE)
+
+    expect(@board.get(0, 5)).to be(OthelloBoard::SPOT_BLACK)
+  end
 end
 

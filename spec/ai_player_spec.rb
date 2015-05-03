@@ -29,5 +29,15 @@ describe AIPlayer do
 
     x, y = @player.generate_move
   end
+
+  describe '#legal_moves' do
+    it 'produces a list of legal moves on the base board' do
+      moves = @player.legal_moves 0, @board
+      moves.map! {|x| x[:point] }
+
+      expect(moves).to contain_exactly([3, 2], [2, 3],
+                                       [5, 4], [4, 5])
+    end
+  end
 end
 
