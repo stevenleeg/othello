@@ -1,6 +1,5 @@
 require './resources/board'
 require './resources/ai_player'
-require 'byebug'
 
 player, depth_limit, board, opponent_color, timelimit1, timelimit2, time_remaining, game_type = nil
 
