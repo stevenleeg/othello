@@ -1,5 +1,6 @@
 require './resources/board'
 require './resources/ai_player'
+STDOUT.sync = true
 
 player, depth_limit, board, opponent_color, timelimit1, timelimit2, time_remaining, game_type = nil
 
@@ -44,7 +45,7 @@ ARGF.each_with_index do |line, line_number|
       x, y = player.get_move(depth_limit, timelimit1)
       time_remaining -= (stopwatch - Time.now) * 1000
       board.place(x, y, player_color)
-      puts "#{x} #{y}"
+      STDOUT.write "#{x} #{y}\n"
 
       puts board.to_s if game_type == 'text'
     else
@@ -66,7 +67,7 @@ ARGF.each_with_index do |line, line_number|
 
   # Are we out of time?
   if timelimit2 > 0 and time_remaining <= 0
-    puts 'pass'
+    STDOUT.write "pass\n"
     next
   end
 
@@ -79,18 +80,18 @@ ARGF.each_with_index do |line, line_number|
 
     # Did we go over during this turn?
     if time_remaining <= 0
-      puts 'pass'
+      STDOUT.write "pass\n"
       next
     end
     puts "#{time_remaining} left"
   end
 
   if move == nil
-    puts 'pass'
+    STDOUT.write "pass\n"
   else
     x, y = move
     board.place(x, y, player.color)
-    puts "#{x} #{y}"
+    STDOUT.write "#{x} #{y}\n"
     puts board.to_s if game_type == 'text'
   end
 end
