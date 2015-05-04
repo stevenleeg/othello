@@ -19,7 +19,7 @@ ARGF.each_with_index do |line, line_number|
     player = AIPlayer.new(board, player_color)
 
     if player_color == OthelloBoard::SPOT_BLACK
-      x, y = player.generate_move
+      x, y = player.get_move
       board.place(x, y, player_color)
       puts board.to_s
     else
@@ -41,8 +41,14 @@ ARGF.each_with_index do |line, line_number|
   end
 
   # Run our move
-  x, y = player.generate_move
-  board.place(x, y, player.color)
-  puts board.to_s
+  move = player.get_move
+
+  if move == nil
+    puts 'pass'
+  else
+    x, y = move
+    board.place(x, y, player.color)
+    puts board.to_s
+  end
 end
 

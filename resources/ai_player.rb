@@ -29,124 +29,76 @@ class AIPlayer
   # Root of Minimax search tree.  Looks at all possible
   # AI moves, runs the minimax algorithm on each tree and
   # chooses 
-  def get_move
+  def get_move(depth = 3)
     moves = legal_moves(@color, @board)
 
-    max_player = true
-    best_move = 0
-    best_score = NEGATIVE_INFINITY
-
-    # Base cases: 0 legal moves - Pass
-    #             1 Legal move  - Return move
-
+    # If we have 0 moves, pass. 1 moves, poop that out.
     if moves.empty?
       return nil
     elsif moves.length == 1
-      return moves.last[:point]
-    else
-
-      puts "moves.length: #{moves.length}"
-      #puts "legal moves: #{moves}"
-      #exit 0
-
-      states = []
-
-      for i in 0..moves.length-1
-        clone = Marshal.load(Marshal.dump(@board)) # TEMPORARY UNTIL WE CAN FIX CLONE METHOD
-        x_point, y_point = moves.at(i)[:point].first, moves.at(i)[:point].last
-        clone.place(x_point, y_point, @color)
-        puts clone.to_s
-        states << { state: clone, score: moves.at(i)[:score] }
-        # Append new state to the list of states.  Add a score to that specified state
-      end
-
-      # States.length should be the same as moves.length
-      #assert_equal(moves.length, states.length, 'Error: Number of possible states is not equal to the number of legal moves')
-
-      for i in 0..states.length-1
-        puts "Moving to AI Move: #{i}"
-        # Use Minimax to find the best move
-        # TO DO - Use ARGF depth argument for depth
-        score = minimax(2, states.at(i), max_player)  # Using depth of 4 as temporary for now. 
-
-        # Assign the best move equal to the current index so we can reference it later
-        if score > best_score
-          best_score = score
-          best_move = i
-        end
-      end 
+      return moves.first[:point]
     end
 
-    return moves.at(best_move)[:point]
+    moves.map do |move|
+      clone = @board.clone
+      x, y = move[:point]
+      score = clone.place(x, y, @player)
+
+      minimax(
+        depth: depth,
+        board: clone,
+        score: score,
+        player: OthelloBoard::opponent_of(@player)
+      )
+      
+      { point: move[:point], score: score }
+    end
+
+    moves.sort! { |x, y| x[:score] <=> y[:score] }
+    return moves.last[:point] # TODO
   end
 
-  def minimax(depth, current_board, maximizing_player)
-    puts "call minimax(#{depth}, current_board, maximizing_player: #{maximizing_player})"
-    # Base Case: only one move possible
-    if depth == 0
-      puts "depth = 0, retuning board score"
-      return current_board[:score]
+  def minimax(options = {})
+    puts "[INFO] minimax(depth: #{options[:depth]})"
+    if options[:depth] == 0
+      puts "[INFO] Depth 0. Returning score #{options[:score]}"
+      return options[:score]
     end
 
-    # If the tree is looking at the AI player's moves
-    if maximizing_player
+    moves = legal_moves(options[:player], options[:board])
+    if moves.length == 0
+      puts "[INFO] Out of moves. Returning score #{options[:score]}"
+      return options[:score]
+    end
 
-      puts "maximizing_player, current_board:"
-      puts "#{current_board[:state].to_s}"
+    scores = []
+    moves.each do |move|
+      scratch = options[:board].clone
+      x, y = move[:point]
+      new_score = scratch.place(x, y, options[:player])
+      # Stop if we can't legally place this move
+      next unless new_score == false
 
-      best_score = NEGATIVE_INFINITY
+      new_score *= (@player == options[:player]) ? 1 : -1
 
-      # ERROR: Legal Moves is not generating moves for the player
-      # Generates possible moves for the human player
-      opponent_moves = legal_moves(OthelloBoard::opponent_of(@color), current_board[:state])
-      puts "maximizing_player, legal_moves: #{opponent_moves}"
+      scores << minimax(
+        depth: options[:depth] - 1,
+        board: scratch,
+        score: options[:score] + new_score,
+        player: OthelloBoard::opponent_of(options[:player])
+      )
+    end
 
-      if opponent_moves.empty?
-        puts "Maximizing_Player: No moves for !"
-        return current_board[:score]
-      else
-        # Generate possible board states for the human player's moves
-        for i in 0..opponent_moves.length-1
-          clone = Marshal.load(Marshal.dump(current_board[:state]))
-          x_point, y_point = opponent_moves.at(i)[:point].first, opponent_moves.at(i)[:point].last
-          if @color == OthelloBoard::SPOT_BLACK
-            clone.place(x_point, y_point, OthelloBoard::SPOT_WHITE)
-          else
-            clone.place(x_point, y_point, OthelloBoard::SPOT_BLACK)
-          end
-          clone_board = { state: clone, score: opponent_moves.at(i)[:score] }
-          generated_score = minimax(depth-1, clone_board, !maximizing_player)
-          best_score = [best_score, generated_score].max
-        end
-      end
-
-      return best_score
-
-      # We are looking at the Human player's moves
-    else 
-      best_score = POSITIVE_INFINITY
-      # Generates possible moves for the AI player
-      puts "minimizing_player, current_board:"
-      puts "#{current_board[:state].to_s}"
-      opponent_moves = legal_moves(@color, current_board[:state])
-
-      if opponent_moves.nil?
-        return current_board[:score]
-      else
-        for i in 0..opponent_moves.length-1
-          clone = Marshal.load(Marshal.dump(current_board[:state]))
-          x_point, y_point = opponent_moves.at(i)[:point].first, opponent_moves.at(i)[:point].last
-          clone.place(x_point, y_point, @color)
-          clone_board = { state: clone, score: opponent_moves.at(i)[:score] }
-
-          generated_score = minimax(depth-1, clone_board, maximizing_player)
-          best_score = [best_score, generated_score].min
-        end
-      end
-
-      return best_score
-    end	
-
+    scores.sort!
+    if @player == options[:player]
+      # Maximize
+      puts "[INFO] Got em. Returning max score #{scores.last}"
+      scores.last
+    else
+      # Minimixing player minimizes
+      puts "[INFO] Got em. Returning min score #{scores.first}"
+      scores.first
+    end
   end
 
   def generate_move

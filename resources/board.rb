@@ -88,7 +88,7 @@ class OthelloBoard
     opponent = OthelloBoard::opponent_of(player)
 
     # TODO: This might be costly. Remove?
-    return false if valid_move?(place_x, place_y, player)
+    return false unless (adds = valid_move?(place_x, place_y, player))
 
     flipper = Proc.new do |points, direction|
       streak = []
@@ -127,6 +127,8 @@ class OthelloBoard
     else
       enumerate_around(place_x, place_y, flipper)
     end
+
+    return adds
   end
 
   # Given a point and a player return an integer (the number of flips that
@@ -225,11 +227,10 @@ class OthelloBoard
   end
 
   def clone
-    matrix = Marshal.load(Marshal.dump(@board))
     b = OthelloBoard.new(true)
-    b.board = matrix
-    b.white_points = @white_points
-    b.black_points = @black_points
+    b.board = Marshal.load(Marshal.dump(@board))
+    b.white_points = Marshal.load(Marshal.dump(@white_points))
+    b.black_points = Marshal.load(Marshal.dump(@black_points))
 
     return b
   end
