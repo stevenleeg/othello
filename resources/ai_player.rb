@@ -48,6 +48,8 @@ class AIPlayer
         depth: depth,
         board: clone,
         score: score,
+        alpha: NEGATIVE_INFINITY,
+        beta: POSITIVE_INFINITY,
         color: OthelloBoard::opponent_of(@color)
       )
       
@@ -55,13 +57,16 @@ class AIPlayer
     end
 
     moves.sort! { |x, y| x[:score] <=> y[:score] }
-    return moves.last[:point] # TODO
+    return moves.last[:point]
   end
 
   def minimax(options = {})
+    alpha, beta = [options[:alpha], options[:beta]]
     if options[:depth] == 0
       return options[:score]
     end
+
+    maximizing_player = @color == options[:color]
 
     moves = legal_moves(options[:color], options[:board])
     if moves.length == 0
@@ -74,16 +79,33 @@ class AIPlayer
       x, y = move[:point]
       new_score = scratch.place(x, y, options[:color])
 
-      scores << minimax(
+      score = minimax(
         depth: options[:depth] - 1,
         board: scratch,
+        alpha: alpha,
+        beta: beta,
         score: new_score,
         color: OthelloBoard::opponent_of(options[:color])
       )
+
+      scores << score
+      # Alpha beta pruning
+      if maximizing_player and score > alpha
+        alpha = score
+        if beta <= alpha
+          break
+        end
+      end
+      if !maximizing_player and score < beta
+        beta = score
+        if beta <= alpha
+          break
+        end
+      end
     end
 
     scores.sort!
-    if @color == options[:color]
+    if maximizing_player
       # Maximize
       scores.last
     else
