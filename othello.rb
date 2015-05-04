@@ -45,6 +45,7 @@ ARGF.each_with_index do |line, line_number|
       x, y = player.get_move(depth_limit, timelimit1)
       time_remaining -= (stopwatch - Time.now) * 1000
       board.place(x, y, player_color)
+      puts "#{x} #{y}"
 
       puts board.to_s if game_type == 'text'
     else
