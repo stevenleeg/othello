@@ -14,21 +14,6 @@ class AIPlayer
     @color = color
   end
 
-  # Temporary shit to test board cloning.  Will delete soon
-
-  def print_clone
-    #clone = @board.clone
-    clone = Marshal.load(Marshal.dump(@board)) 
-    clone.place(1, 1, @color)
-    puts "Clone WP: #{clone.white_points}"
-    puts "Clone BP: #{clone.black_points}"
-  end
-
-  ## Haven't actually tested this last part yet since I need to create the Minimax function
-
-  # Root of Minimax search tree.  Looks at all possible
-  # AI moves, runs the minimax algorithm on each tree and
-  # chooses 
   def get_move(depth = 3)
     moves = legal_moves(@color, @board)
 

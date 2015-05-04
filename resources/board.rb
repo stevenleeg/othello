@@ -66,10 +66,6 @@ class OthelloBoard
       @white_points << [x, y]
       @black_points.delete [x, y]
     end
-
-    if debug_mode
-      puts "[INFO] Marked #{x}, #{y} as #{OthelloBoard.spot_to_s(val)}"
-    end
   end
 
   def get(x, y)
@@ -86,10 +82,9 @@ class OthelloBoard
   def place(place_x, place_y, player)
     opponent = OthelloBoard::opponent_of(player)
 
-    # TODO: This might be costly. Remove?
-    return false unless (adds = valid_move?(place_x, place_y, player))
     mark(place_x, place_y, player)
 
+    adds_points = 0
     flipper = Proc.new do |points, direction|
       streak = []
       reached_player = false
@@ -116,19 +111,15 @@ class OthelloBoard
       # Flip over all of the spots in the streak
       if streak.length > 0 and reached_player
         streak.map do |point|
+          adds_points += 1
           mark(point[0], point[1], player)
         end
       end
     end
 
-    if debug_mode
-      puts "[INFO] Placing #{OthelloBoard.spot_to_s(player)} on (#{place_x}, #{place_y})"
-      enumerate_around(place_x, place_y, flipper)
-    else
-      enumerate_around(place_x, place_y, flipper)
-    end
+    enumerate_around(place_x, place_y, flipper)
 
-    return adds
+    return adds_points
   end
 
   # Given a point and a player return an integer (the number of flips that
