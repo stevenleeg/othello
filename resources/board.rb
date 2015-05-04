@@ -84,11 +84,11 @@ class OthelloBoard
   # This basically does what you (as a human) would do while placing a piece on
   # the board. Use this instead of mark if you're making moves.
   def place(place_x, place_y, player)
-    mark(place_x, place_y, player)
     opponent = OthelloBoard::opponent_of(player)
 
     # TODO: This might be costly. Remove?
     return false unless (adds = valid_move?(place_x, place_y, player))
+    mark(place_x, place_y, player)
 
     flipper = Proc.new do |points, direction|
       streak = []

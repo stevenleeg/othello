@@ -42,13 +42,13 @@ class AIPlayer
     moves.map do |move|
       clone = @board.clone
       x, y = move[:point]
-      score = clone.place(x, y, @player)
+      score = clone.place(x, y, @color)
 
       minimax(
         depth: depth,
         board: clone,
         score: score,
-        player: OthelloBoard::opponent_of(@player)
+        color: OthelloBoard::opponent_of(@color)
       )
       
       { point: move[:point], score: score }
@@ -59,15 +59,12 @@ class AIPlayer
   end
 
   def minimax(options = {})
-    puts "[INFO] minimax(depth: #{options[:depth]})"
     if options[:depth] == 0
-      puts "[INFO] Depth 0. Returning score #{options[:score]}"
       return options[:score]
     end
 
-    moves = legal_moves(options[:player], options[:board])
+    moves = legal_moves(options[:color], options[:board])
     if moves.length == 0
-      puts "[INFO] Out of moves. Returning score #{options[:score]}"
       return options[:score]
     end
 
@@ -75,28 +72,22 @@ class AIPlayer
     moves.each do |move|
       scratch = options[:board].clone
       x, y = move[:point]
-      new_score = scratch.place(x, y, options[:player])
-      # Stop if we can't legally place this move
-      next unless new_score == false
-
-      new_score *= (@player == options[:player]) ? 1 : -1
+      new_score = scratch.place(x, y, options[:color])
 
       scores << minimax(
         depth: options[:depth] - 1,
         board: scratch,
-        score: options[:score] + new_score,
-        player: OthelloBoard::opponent_of(options[:player])
+        score: new_score,
+        color: OthelloBoard::opponent_of(options[:color])
       )
     end
 
     scores.sort!
-    if @player == options[:player]
+    if @color == options[:color]
       # Maximize
-      puts "[INFO] Got em. Returning max score #{scores.last}"
       scores.last
     else
       # Minimixing player minimizes
-      puts "[INFO] Got em. Returning min score #{scores.first}"
       scores.first
     end
   end
@@ -133,7 +124,7 @@ class AIPlayer
           next
         end
 
-        if added = board.valid_move?(x, y, @color)
+        if (added = board.valid_move?(x, y, player))
           moves << { point: [x, y], score: added }
         end
       end
