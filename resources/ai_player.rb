@@ -14,7 +14,7 @@ class AIPlayer
     @color = color
   end
 
-  def get_move(depth = 3)
+  def get_move(depth = 3, timelimit = 0)
     moves = legal_moves(@color, @board)
 
     # If we have 0 moves, pass. 1 moves, poop that out.
@@ -29,7 +29,7 @@ class AIPlayer
       x, y = move[:point]
       score = clone.place(x, y, @color)
 
-      minimax(
+      score = minimax(
         depth: depth,
         board: clone,
         score: score,

@@ -2,13 +2,16 @@ require './resources/board'
 require './resources/ai_player'
 require 'byebug'
 
-player, depth_limit, board, opponent_color = nil
+player, depth_limit, board, opponent_color, timelimit1, timelimit2 = nil
 
 ARGF.each_with_index do |line, line_number|
   # Take in the game initialization string
   if line_number == 0
     _, player_color, depth_limit, timelimit1, timelimit2 = line.split(' ')
     depth_limit = depth_limit.to_i
+    depth_limit = depth_limit == 0 ? 10 : depth_limit
+    timelimit1 = timelimit1.to_i
+    timelimit2 = timelimit2.to_i
 
     # Convert the player color to a constant value
     player_color = \
@@ -20,7 +23,7 @@ ARGF.each_with_index do |line, line_number|
     player = AIPlayer.new(board, player_color)
 
     if player_color == OthelloBoard::SPOT_BLACK
-      x, y = player.get_move(depth_limit)
+      x, y = player.get_move(depth_limit, timelimit1)
       board.place(x, y, player_color)
       puts board.to_s
     else
@@ -42,7 +45,7 @@ ARGF.each_with_index do |line, line_number|
   end
 
   # Run our move
-  move = player.get_move(depth_limit)
+  move = player.get_move(depth_limit, timelimit1)
 
   if move == nil
     puts 'pass'
