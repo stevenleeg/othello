@@ -2,7 +2,7 @@ require './resources/board'
 require './resources/ai_player'
 require 'byebug'
 
-player, depth_limit, board, opponent_color, timelimit1, timelimit2 = nil
+player, depth_limit, board, opponent_color, timelimit1, timelimit2, time_remaining = nil
 
 ARGF.each_with_index do |line, line_number|
   # Take in the game initialization string
@@ -13,7 +13,8 @@ ARGF.each_with_index do |line, line_number|
     depth_limit = depth_limit.to_i
     depth_limit = depth_limit == 0 ? 10 : depth_limit
     timelimit1 = timelimit1.to_f / 1000 # Convert ms to s
-    timelimit2 = timelimit2.to_f
+    timelimit2 = timelimit2.to_i
+    time_remaining = timelimit2
 
     # Convert timelimit 1 to a depth value (easier to track)
     # NOTE: These values came from our own experimentation and are relatively
@@ -40,8 +41,11 @@ ARGF.each_with_index do |line, line_number|
     player = AIPlayer.new(board, player_color)
 
     if player_color == OthelloBoard::SPOT_BLACK
+      stopwatch = Time.now
       x, y = player.get_move(depth_limit, timelimit1)
+      time_remaining -= (stopwatch - Time.now) * 1000
       board.place(x, y, player_color)
+
       puts board.to_s
     else
       puts board.to_s
@@ -61,8 +65,26 @@ ARGF.each_with_index do |line, line_number|
     puts board.to_s
   end
 
+  # Are we out of time?
+  if timelimit2 > 0 and time_remaining <= 0
+    puts 'pass'
+    next
+  end
+
   # Run our move
+  stopwatch = Time.now
   move = player.get_move(depth_limit, timelimit1)
+
+  if timelimit2 > 0
+    time_remaining -= (Time.now - stopwatch) * 1000
+
+    # Did we go over during this turn?
+    if time_remaining <= 0
+      puts 'pass'
+      next
+    end
+    puts "#{time_remaining} left"
+  end
 
   if move == nil
     puts 'pass'
