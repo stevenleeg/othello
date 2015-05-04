@@ -10,7 +10,7 @@ ARGF.each_with_index do |line, line_number|
 
     # Convert input to integers
     depth_limit = depth_limit.to_i
-    depth_limit = depth_limit == 0 ? 10 : depth_limit
+    depth_limit = depth_limit == 0 ? 3 : depth_limit
     timelimit1 = timelimit1.to_f / 1000 # Convert ms to s
     timelimit2 = timelimit2.to_i
     time_remaining = timelimit2
