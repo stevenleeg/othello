@@ -2,12 +2,12 @@ require './resources/board'
 require './resources/ai_player'
 require 'byebug'
 
-player, depth_limit, board, opponent_color, timelimit1, timelimit2, time_remaining = nil
+player, depth_limit, board, opponent_color, timelimit1, timelimit2, time_remaining, game_type = nil
 
 ARGF.each_with_index do |line, line_number|
   # Take in the game initialization string
   if line_number == 0
-    _, player_color, depth_limit, timelimit1, timelimit2 = line.split(' ')
+    game_type, player_color, depth_limit, timelimit1, timelimit2 = line.split(' ')
 
     # Convert input to integers
     depth_limit = depth_limit.to_i
@@ -46,9 +46,9 @@ ARGF.each_with_index do |line, line_number|
       time_remaining -= (stopwatch - Time.now) * 1000
       board.place(x, y, player_color)
 
-      puts board.to_s
+      puts board.to_s if game_type == 'text'
     else
-      puts board.to_s
+      puts board.to_s if game_type == 'text'
     end
     next
   end
@@ -60,9 +60,8 @@ ARGF.each_with_index do |line, line_number|
       puts 'Invalid move!'
       next
     end
-    puts "[INFO] Move adds #{added} points"
     board.place(x, y, opponent_color)
-    puts board.to_s
+    puts board.to_s if game_type == 'text'
   end
 
   # Are we out of time?
@@ -91,7 +90,8 @@ ARGF.each_with_index do |line, line_number|
   else
     x, y = move
     board.place(x, y, player.color)
-    puts board.to_s
+    puts "#{x} #{y}"
+    puts board.to_s if game_type == 'text'
   end
 end
 
