@@ -29,18 +29,20 @@ ARGF.each_with_index do |line, line_number|
   end
   
   # Read in our opponant's next move and respond with our own
-  x, y = line.split(' ').map(&:to_i)
-  if not (added = board.valid_move?(x, y, opponent_color))
-    puts 'Invalid move!'
-  else
+  unless line.strip == 'pass'
+    x, y = line.split(' ').map(&:to_i)
+    if not (added = board.valid_move?(x, y, opponent_color))
+      puts 'Invalid move!'
+      next
+    end
     puts "[INFO] Move adds #{added} points"
     board.place(x, y, opponent_color)
     puts board.to_s
-
-    # Run our move
-    x, y = player.generate_move
-    board.place(x, y, player.color)
-    puts board.to_s
   end
+
+  # Run our move
+  x, y = player.generate_move
+  board.place(x, y, player.color)
+  puts board.to_s
 end
 
